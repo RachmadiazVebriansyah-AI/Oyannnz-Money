@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oyannnz_Money - Pencatat Keuangan Pribadi</title>
+    <!-- Menggunakan Tailwind CSS untuk styling modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans untuk tampilan estetik -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome untuk ikon pendukung -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen selection:bg-indigo-500 selection:text-white">
+
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-wallet text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+                        Dompetku - Keuangan Terkelola, Masa Depan Terjaga ✨ <span class="text-indigo-400 font-extrabold">oyannnz_Money</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Kelola dompet dan atur alokasi dana dengan bijak</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="resetAllData()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Reset Semua Data
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- Notifikasi Pesan Kustom -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toast-message">Pesan notifikasi di sini</span>
+        </div>
+
+        <!-- Ringkasan Saldo Utama -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Total Saldo -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Saldo / Pemasukan</span>
+                    <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-white mb-3" id="display-total-saldo">Rp 0</div>
+                
+                <!-- Input Tambah Saldo -->
+                <div class="flex gap-2 mt-2">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-slate-500 font-bold">Rp</span>
+                        <input type="text" id="input-saldo" placeholder="Atur / Tambah Saldo..." 
+                            class="w-full pl-9 pr-3 py-2 bg-slate-950/60 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-200 placeholder-slate-600 font-medium"
+                            oninput="formatRupiahInput(this)">
+                    </div>
+                    <button onclick="updateSaldo()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-plus"></i> Set Saldo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sisa Saldo Keseluruhan -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Sisa Saldo Keseluruhan</span>
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-wallet"></i>
+                    </span>
+                </div>
+                <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 mb-3" id="display-sisa-saldo">Rp 0</div>
+                <div class="text-xs text-slate-400 flex items-center gap-1 mt-4">
+                    <i class="fa-solid fa-info-circle text-indigo-400"></i> Akumulasi sisa dari seluruh alokasi dana kategori.
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Kolom Kiri: Alokasi Kategori & Form Pengeluaran (Span 2) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Bagian Alokasi Dana Kategori -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h2 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-pie-chart text-indigo-400"></i> Alokasi Dana Kategori
+                            </h2>
+                            <p class="text-xs text-slate-400">Masukkan dana secara manual ke masing-masing pos kebutuhanmu</p>
+                        </div>
+                    </div>
+
+                    <!-- Grid Kategori -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="category-cards-container">
+                        <!-- Akan di-generate via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Bagian Form Catat Pengeluaran -->
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-xl">
+                    <h2 class="text-base font-bold text-white mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-indigo-400"></i> Catat Pengeluaran Baru
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-4">Catat penggunaan uangmu sesuai kategori yang tersedia</p>
+
+                    <form onsubmit="handleExpenseSubmit(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Pilih Kategori</label>
+                                <select id="expense-category" required
+                                    class="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-200">
+                                    <option value="" disabled selected>-- Pilih Kategori --</option>
+                                    <option value="Makan">Makan</option>
+                                    <option value="Jajan">Jajan</option>
+                                    <option value="Kebutuhan">Kebutuhan</option>
+                                    <option value="Tabungan">Tabungan</option>
+                                    <option value="Saham">Saham</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nominal Pengeluaran</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs text-slate-500 font-bold">Rp</span>
+                                    <input type="text" id="expense-amount" required placeholder="Contoh: 20.000"
+                                        class="w-full pl-10 pr-3.5 py-2.5 bg-slate-950/70 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-200 placeholder-slate-600"
+                                        oninput="formatRupiahInput(this)">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Keterangan / Catatan</label>
+                            <input type="text" id="expense-desc" required placeholder="Misal: Makan siang di warteg langganan"
+                                class="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-700/60 rounded-xl text-sm focus:outline-none focus:border-indigo-500 text-slate-200 placeholder-slate-600">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Simpan Pengeluaran
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Kolom Kanan: Riwayat Pengeluaran (Span 1) -->
+            <div class="space-y-6">
+                <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 shadow-xl flex flex-col h-[600px]">
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> Riwayat
+                            </h2>
+                            <p class="text-xs text-slate-400">Daftar pengeluaran tercatat</p>
+                        </div>
+                        <button onclick="clearHistoryData()" class="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold rounded-lg transition-all flex items-center gap-1" title="Hapus Semua Riwayat">
+                            <i class="fa-solid fa-trash"></i> Reset Riwayat
+                        </button>
+                    </div>
+
+                    <!-- Container List Riwayat (Scrollable) -->
+                    <div class="flex-1 overflow-y-auto space-y-3 pr-1" id="history-container">
+                        <!-- Data riwayat akan muncul di sini -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // State Utama Aplikasi
+        let appData = {
+            totalSaldo: 0,
+            categories: {
+                "Makan": { allocated: 0, spent: 0 },
+                "Jajan": { allocated: 0, spent: 0 },
+                "Kebutuhan": { allocated: 0, spent: 0 },
+                "Tabungan": { allocated: 0, spent: 0 },
+                "Saham": { allocated: 0, spent: 0 }
+            },
+            history: []
+        };
+
+        // Saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderApp();
+        });
+
+        // Fungsi format angka dengan titik otomatis ribuan (contoh: 50.000)
+        function formatRupiahInput(input) {
+            let value = input.value.replace(/[^,\d]/g, '').toString();
+            let split = value.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+            input.value = rupiah;
+        }
+
+        // Helper ubah string format titik ke integer murni
+        function parseRupiah(str) {
+            if (!str) return 0;
+            return parseInt(str.toString().replace(/\./g, '')) || 0;
+        }
+
+        // Helper format angka ke Rupiah tampilan
+        function formatRupiahDisplay(angka) {
+            return 'Rp ' + Number(angka).toLocaleString('id-ID');
+        }
+
+        // Notifikasi Toast kustom pengganti alert()
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMessage.textContent = message;
+            if(type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            } else {
+                toastIcon.className = 'fa-solid fa-triangle-exclamation text-amber-400 text-lg';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Update Total Saldo Utama
+        function updateSaldo() {
+            const inputVal = document.getElementById('input-saldo').value;
+            const numericVal = parseRupiah(inputVal);
+
+            if (numericVal <= 0) {
+                showToast('Masukkan jumlah saldo yang valid!', 'error');
+                return;
+            }
+
+            appData.totalSaldo = numericVal;
+            document.getElementById('input-saldo').value = '';
+            saveToLocalStorage();
+            renderApp();
+            showToast('Saldo utama berhasil diperbarui!');
+        }
+
+        // Update Alokasi Dana Manual per Kategori
+        function updateCategoryAllocation(catName) {
+            const inputEl = document.getElementById(`alloc-${catName}`);
+            const newAlloc = parseRupiah(inputEl.value);
+
+            appData.categories[catName].allocated = newAlloc;
+            saveToLocalStorage();
+            renderApp();
+            showToast(`Alokasi kategori ${catName} diperbarui!`);
+        }
+
+        // Submit Catat Pengeluaran
+        function handleExpenseSubmit(e) {
+            e.preventDefault();
+            const category = document.getElementById('expense-category').value;
+            const amountStr = document.getElementById('expense-amount').value;
+            const desc = document.getElementById('expense-desc').value;
+            const amount = parseRupiah(amountStr);
+
+            if (!category || amount <= 0 || !desc) {
+                showToast('Mohon lengkapi data pengeluaran dengan benar!', 'error');
+                return;
+            }
+
+            const cat = appData.categories[category];
+            const remainingCat = cat.allocated - cat.spent;
+            
+            if (amount > remainingCat) {
+                showToast(`Peringatan: Pengeluaran melebihi alokasi sisa ${category}!`, 'error');
+            }
+
+            // Tambahkan spent pada kategori
+            cat.spent += amount;
+
+            // Tambahkan ke history
+            const newHistoryItem = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                category: category,
+                amount: amount,
+                desc: desc
+            };
+
+            appData.history.unshift(newHistoryItem);
+
+            // Reset Form
+            document.getElementById('expense-category').value = "";
+            document.getElementById('expense-amount').value = "";
+            document.getElementById('expense-desc').value = "";
+
+            saveToLocalStorage();
+            renderApp();
+            showToast('Pengeluaran berhasil dicatat!');
+        }
+
+        // Hapus Item Riwayat Satuan
+        function deleteHistoryItem(id) {
+            const itemIndex = appData.history.findIndex(item => item.id === id);
+            if (itemIndex > -1) {
+                const item = appData.history[itemIndex];
+                if (appData.categories[item.category]) {
+                    appData.categories[item.category].spent -= item.amount;
+                    if (appData.categories[item.category].spent < 0) {
+                        appData.categories[item.category].spent = 0;
+                    }
+                }
+                appData.history.splice(itemIndex, 1);
+                saveToLocalStorage();
+                renderApp();
+                showToast('Riwayat berhasil dihapus.');
+            }
+        }
+
+        // Fitur Reset Khusus Riwayat (Delete All History)
+        function clearHistoryData() {
+            if (appData.history.length === 0) {
+                showToast('Riwayat sudah kosong.', 'error');
+                return;
+            }
+
+            for (let cat in appData.categories) {
+                appData.categories[cat].spent = 0;
+            }
+
+            appData.history = [];
+            saveToLocalStorage();
+            renderApp();
+            showToast('Semua riwayat pengeluaran berhasil di-reset!');
+        }
+
+        // Fitur Reset Data Keseluruhan
+        function resetAllData() {
+            appData = {
+                totalSaldo: 0,
+                categories: {
+                    "Makan": { allocated: 0, spent: 0 },
+                    "Jajan": { allocated: 0, spent: 0 },
+                    "Kebutuhan": { allocated: 0, spent: 0 },
+                    "Tabungan": { allocated: 0, spent: 0 },
+                    "Saham": { allocated: 0, spent: 0 }
+                },
+                history: []
+            };
+            saveToLocalStorage();
+            renderApp();
+            showToast('Semua data aplikasi telah di-reset bersih!');
+        }
+
+        // LocalStorage Management
+        function saveToLocalStorage() {
+            localStorage.setItem('oyannnz_money_data', JSON.stringify(appData));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('oyannnz_money_data');
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Gagal memuat data lokal', e);
+                }
+            }
+        }
+
+        // Render Keseluruhan Tampilan Aplikasi ke DOM
+        function renderApp() {
+            // 1. Render Total Saldo Utama
+            document.getElementById('display-total-saldo').textContent = formatRupiahDisplay(appData.totalSaldo);
+
+            // Hitung total keseluruhan pengeluaran dari semua kategori
+            let totalSpentAll = 0;
+            for (let cat in appData.categories) {
+                totalSpentAll += appData.categories[cat].spent;
+            }
+
+            // Sisa Saldo Keseluruhan = Total Saldo - Total Pengeluaran Keseluruhan
+            let sisaSaldoKeseluruhan = appData.totalSaldo - totalSpentAll;
+            const sisaEl = document.getElementById('display-sisa-saldo');
+            sisaEl.textContent = formatRupiahDisplay(sisaSaldoKeseluruhan);
+            if(sisaSaldoKeseluruhan < 0) {
+                sisaEl.className = 'text-2xl sm:text-3xl font-extrabold text-rose-400 mb-3';
+            } else {
+                sisaEl.className = 'text-2xl sm:text-3xl font-extrabold text-emerald-400 mb-3';
+            }
+
+            // 2. Render Kategori Alokasi
+            const catContainer = document.getElementById('category-cards-container');
+            catContainer.innerHTML = '';
+
+            for (let catName in appData.categories) {
+                const cat = appData.categories[catName];
+                const sisaCat = cat.allocated - cat.spent;
+
+                let iconClass = "fa-solid fa-utensils text-amber-400 bg-amber-500/20";
+                if(catName === "Jajan") iconClass = "fa-solid fa-ice-cream text-pink-400 bg-pink-500/20";
+                if(catName === "Kebutuhan") iconClass = "fa-solid fa-basket-shopping text-blue-400 bg-blue-500/20";
+                if(catName === "Tabungan") iconClass = "fa-solid fa-vault text-emerald-400 bg-emerald-500/20";
+                if(catName === "Saham") iconClass = "fa-solid fa-chart-line text-purple-400 bg-purple-500/20";
+
+                const cardHtml = `
+                    <div class="bg-slate-950/50 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between gap-3">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm ${iconClass}">
+                                        <i class="${iconClass.split(' ')[0]} ${iconClass.split(' ')[1]}"></i>
+                                    </div>
+                                    <h3 class="font-bold text-white text-sm">${catName}</h3>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2 text-xs my-2 bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                                <div>
+                                    <span class="text-slate-400 block text-[10px]">Alokasi Dana</span>
+                                    <span class="font-bold text-slate-200">${formatRupiahDisplay(cat.allocated)}</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-400 block text-[10px]">Terpakai</span>
+                                    <span class="font-bold text-rose-400">${formatRupiahDisplay(cat.spent)}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center text-xs mt-1">
+                                <span class="text-slate-400">Sisa Kategori:</span>
+                                <span class="font-extrabold ${sisaCat < 0 ? 'text-rose-400' : 'text-emerald-400'}">${formatRupiahDisplay(sisaCat)}</span>
+                            </div>
+                        </div>
+
+                        <!-- Input Alokasi Manual -->
+                        <div class="flex gap-1.5 pt-2 border-t border-slate-800/80">
+                            <input type="text" id="alloc-${catName}" placeholder="Atur dana..." 
+                                class="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700/60 rounded-lg text-xs focus:outline-none focus:border-indigo-500 text-slate-200 placeholder-slate-600 font-medium"
+                                oninput="formatRupiahInput(this)">
+                            <button onclick="updateCategoryAllocation('${catName}')" class="px-3 py-1.5 bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white text-xs font-semibold rounded-lg transition-all shrink-0">
+                                Set
+                            </button>
+                        </div>
+                    </div>
+                `;
+                catContainer.innerHTML += cardHtml;
+            }
+
+            // 3. Render Riwayat Pengeluaran
+            const historyContainer = document.getElementById('history-container');
+            historyContainer.innerHTML = '';
+
+            if (appData.history.length === 0) {
+                historyContainer.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-500 text-center py-10">
+                        <i class="fa-solid fa-receipt text-3xl mb-2 opacity-40"></i>
+                        <p class="text-xs">Belum ada riwayat pengeluaran tercatat.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            appData.history.forEach(item => {
+                let badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                if(item.category === "Jajan") badgeColor = "bg-pink-500/10 text-pink-400 border-pink-500/20";
+                if(item.category === "Kebutuhan") badgeColor = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+                if(item.category === "Tabungan") badgeColor = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                if(item.category === "Saham") badgeColor = "bg-purple-500/10 text-purple-400 border-purple-500/20";
+
+                const historyItemHtml = `
+                    <div class="bg-slate-950/40 border border-slate-800/70 hover:border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 transition-all">
+                        <div class="space-y-1 overflow-hidden">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">${item.category}</span>
+                                <span class="text-[10px] text-slate-400">${item.date}</span>
+                            </div>
+                            <p class="text-xs font-semibold text-slate-200 truncate" title="${item.desc}">${item.desc}</p>
+                            <p class="text-xs font-extrabold text-rose-400">- ${formatRupiahDisplay(item.amount)}</p>
+                        </div>
+                        <button onclick="deleteHistoryItem(${item.id})" class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center transition-all shrink-0" title="Hapus Item">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                historyContainer.innerHTML += historyItemHtml;
+            });
+        }
+    </script>
+</body>
+</html>
