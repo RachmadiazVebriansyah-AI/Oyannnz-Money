@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>Oyannnz-Money — Personal Finance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main id="authScreen" class="auth-screen">
+    <section class="auth-brand">
+      <div class="brand-mark">O<span>•</span></div>
+      <div>
+        <div class="brand-name">Oyannnz<span>-Money</span></div>
+        <p class="brand-tagline">Your money, in focus.</p>
+      </div>
+    </section>
+    <section class="auth-layout">
+      <div class="auth-copy">
+        <div class="eyebrow"><span class="status-dot"></span> PERSONAL FINANCE, SIMPLIFIED</div>
+        <h1>Atur uangmu.<br><span>Kendalikan tujuanmu.</span></h1>
+        <p class="auth-description">Satu tempat untuk memahami arus uang, mengelola kantong, dan membangun kebiasaan finansial yang lebih baik.</p>
+        <div class="auth-points">
+          <div><span class="point-icon">↗</span><span>Pantau pemasukan dan pengeluaran</span></div>
+          <div><span class="point-icon">▦</span><span>Pisahkan uang sesuai kebutuhan</span></div>
+          <div><span class="point-icon">◷</span><span>Riwayat tersimpan di perangkatmu</span></div>
+        </div>
+        <div class="auth-footnote">PRIVATE BY DESIGN <span>•</span> DATA TERSIMPAN DI BROWSER</div>
+      </div>
+      <div class="auth-card">
+        <div class="auth-card-head">
+          <div class="mini-brand">OM</div>
+          <div><h2 id="authTitle">Selamat datang kembali</h2><p id="authSubtitle">Masuk untuk mengelola keuanganmu.</p></div>
+        </div>
+        <button id="googleBtn" class="google-btn" type="button"><span class="google-g">G</span> Sign in with Google <span class="arrow">↗</span></button>
+        <div class="or-divider"><span>atau lanjutkan dengan akun</span></div>
+        <form id="authForm">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" minlength="3" placeholder="contoh: oyannnz" required>
+          <label for="password">Password</label>
+          <div class="password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" minlength="4" placeholder="Minimal 4 karakter" required><button id="togglePassword" type="button" aria-label="Tampilkan password">◉</button></div>
+          <p id="authError" class="form-error" aria-live="polite"></p>
+          <button id="authSubmit" class="primary-btn full-btn" type="submit">Masuk ke dashboard <span>→</span></button>
+        </form>
+        <p class="auth-switch"><span id="switchPrompt">Belum punya akun?</span> <button id="switchAuth" type="button">Daftar sekarang</button></p>
+        <button id="guestBtn" class="guest-btn" type="button">Coba sebagai Guest <span>→</span></button>
+        <p class="security-note"><span>●</span> Akun lokal demo disimpan di browser ini.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="appScreen" class="app-shell hidden">
+    <aside class="sidebar">
+      <a href="#" class="brand-lockup" aria-label="Oyannnz-Money home"><span class="brand-symbol">O<span>•</span></span><span class="brand-name">Oyannnz<span>-Money</span></span></a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="main-nav">
+        <button class="nav-item active" data-nav="overview"><span class="nav-icon">▦</span> Overview</button>
+        <button class="nav-item" data-nav="transactions"><span class="nav-icon">⇄</span> Transaksi</button>
+        <button class="nav-item" data-nav="pockets"><span class="nav-icon">▣</span> Kantong uang</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-help"><div class="help-icon">✦</div><strong>Small steps,<br>better money.</strong><p>Kebiasaan kecil hari ini membangun masa depanmu.</p></div>
+        <div class="user-profile"><div class="avatar" id="userAvatar">O</div><div class="user-meta"><strong id="userDisplay">Guest</strong><span id="userRole">Demo mode</span></div><button id="logoutBtn" class="logout-btn" title="Keluar" aria-label="Logout">↪</button></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div><div class="breadcrumb">Workspace <span>/</span> <strong id="pageName">Overview</strong></div><h1 id="pageTitle">Ringkasan keuangan</h1><p id="pageSubtitle">Pantau kondisi keuanganmu hari ini.</p></div>
+        <div class="topbar-actions"><div class="date-chip"><span>◷</span><span id="todayLabel"></span></div><button id="quickAddBtn" class="primary-btn"><span>＋</span> Transaksi baru</button></div>
+      </header>
+
+      <section id="overviewPage" class="page-section">
+        <div class="summary-grid">
+          <article class="balance-card">
+            <div class="balance-top"><span>Total saldo keseluruhan</span><span class="balance-icon">◈</span></div>
+            <div class="balance-amount" id="totalBalance">Rp 0</div>
+            <div class="balance-bottom"><span class="balance-pulse"></span> Akumulasi seluruh kantongmu</div>
+            <div class="balance-decoration deco-one"></div><div class="balance-decoration deco-two"></div>
+          </article>
+          <article class="metric-card"><div class="metric-top"><span>Total pemasukan</span><span class="metric-icon income-icon">↙</span></div><div class="metric-amount income-text" id="totalIncome">Rp 0</div><div class="metric-caption"><span class="tiny-dot green"></span> Dari semua transaksi</div></article>
+          <article class="metric-card"><div class="metric-top"><span>Total pengeluaran</span><span class="metric-icon expense-icon">↗</span></div><div class="metric-amount expense-text" id="totalExpense">Rp 0</div><div class="metric-caption"><span class="tiny-dot red"></span> Dari semua transaksi</div></article>
+        </div>
+
+        <div class="section-heading"><div><h2>Kantong keuangan</h2><p>Uangmu terorganisir, tujuanmu lebih jelas.</p></div><button id="addPocketBtn" class="secondary-btn">＋ Tambah kantong</button></div>
+        <div id="pocketGrid" class="pocket-grid"></div>
+
+        <div class="lower-grid">
+          <section class="panel recent-panel"><div class="panel-heading"><div><h2>Transaksi terbaru</h2><p>Aktivitas keuangan terakhir</p></div><button class="text-btn" data-go="transactions">Lihat semua <span>→</span></button></div><div id="recentTransactions" class="transaction-list"></div></section>
+          <section class="panel insight-panel"><div class="panel-heading"><div><h2>Arus keuangan</h2><p>Perbandingan pemasukan & pengeluaran</p></div><span class="period-tag">SEMUA WAKTU</span></div><div class="flow-legend"><span><i class="legend-dot green"></i>Pemasukan</span><span><i class="legend-dot red"></i>Pengeluaran</span></div><div class="flow-chart" id="flowChart"></div><div class="flow-summary"><div><span>Net cash flow</span><strong id="netFlow">Rp 0</strong></div><span class="flow-note">Pemasukan dikurangi pengeluaran</span></div></section>
+        </div>
+      </section>
+
+      <section id="transactionsPage" class="page-section hidden">
+        <div class="panel transaction-page-panel">
+          <div class="panel-heading transactions-heading"><div><h2>Semua transaksi</h2><p>Kelola setiap uang yang masuk dan keluar.</p></div><button id="clearHistoryBtn" class="danger-outline-btn">⌫ Hapus semua riwayat</button></div>
+          <div class="filters"><div class="search-wrap"><span>⌕</span><input id="searchTransactions" placeholder="Cari keterangan atau kantong..." aria-label="Cari transaksi"></div><select id="typeFilter" aria-label="Filter jenis"><option value="all">Semua jenis</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select><select id="pocketFilter" aria-label="Filter kantong"><option value="all">Semua kantong</option></select></div>
+          <div class="table-wrap"><table><thead><tr><th>TRANSAKSI</th><th>KANTONG</th><th>TANGGAL</th><th>JENIS</th><th class="amount-col">NOMINAL</th><th></th></tr></thead><tbody id="transactionTable"></tbody></table></div>
+          <div id="emptyTransactions" class="empty-state hidden"><div class="empty-icon">↔</div><strong>Belum ada transaksi</strong><p>Transaksi yang kamu catat akan muncul di sini.</p><button class="primary-btn" data-open-form>＋ Tambah transaksi</button></div>
+        </div>
+      </section>
+
+      <section id="pocketsPage" class="page-section hidden">
+        <div class="section-heading"><div><h2>Semua kantong</h2><p>Atur uang ke dalam pos yang sesuai prioritasmu.</p></div><button class="secondary-btn" data-add-pocket>＋ Tambah kantong</button></div>
+        <div id="pocketsManageGrid" class="pocket-grid manage-grid"></div>
+        <div class="note-panel"><span class="note-icon">ⓘ</span><p><strong>Saldo tersinkron otomatis.</strong> Pemasukan dan pengeluaran langsung memperbarui saldo kantong dan total saldo. Oyannnz-Money tidak menyediakan transfer antar kantong.</p></div>
+      </section>
+
+      <footer class="app-footer"><span>© <span id="year"></span> Oyannnz-Money</span><span>Made for mindful money habits <span class="footer-dot">●</span></span></footer>
+    </main>
+  </div>
+
+  <div id="transactionModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="transactionModalTitle">
+    <div class="modal-card">
+      <div class="modal-header"><div><span class="modal-kicker">MONEY MOVEMENT</span><h2 id="transactionModalTitle">Tambah transaksi</h2><p>Catat uang masuk atau keluar.</p></div><button class="modal-close" data-close-modal aria-label="Tutup">×</button></div>
+      <form id="transactionForm">
+        <div class="type-toggle"><button type="button" class="type-option selected expense-option" data-type="expense"><span>↗</span> Pengeluaran</button><button type="button" class="type-option income-option" data-type="income"><span>↙</span> Pemasukan</button></div>
+        <input type="hidden" id="transactionType" value="expense">
+        <label for="amountInput">Nominal (Rp)</label><div class="amount-input-wrap"><span>Rp</span><input id="amountInput" inputmode="numeric" autocomplete="off" placeholder="0" required><span class="amount-suffix">IDR</span></div><p class="input-hint">Ketik angka, pemisah ribuan ditambahkan otomatis.</p>
+        <label for="pocketSelect">Kantong keuangan</label><select id="pocketSelect" required></select>
+        <label for="noteInput">Keterangan</label><input id="noteInput" maxlength="120" placeholder="Contoh: Makan siang, gaji bulanan..." required>
+        <label for="transactionDate">Tanggal dan waktu</label><input id="transactionDate" type="datetime-local" required>
+        <div class="modal-actions"><button type="button" class="secondary-btn" data-close-modal>Batal</button><button type="submit" class="primary-btn" id="saveTransactionBtn">Simpan transaksi <span>→</span></button></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="pocketModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="pocketModalTitle">
+    <div class="modal-card compact-modal"><div class="modal-header"><div><span class="modal-kicker">CUSTOM POCKET</span><h2 id="pocketModalTitle">Tambah kantong</h2><p>Buat pos keuangan sesuai kebutuhanmu.</p></div><button class="modal-close" data-close-pocket aria-label="Tutup">×</button></div>
+      <form id="pocketForm"><label for="pocketNameInput">Nama kantong</label><input id="pocketNameInput" maxlength="28" placeholder="Contoh: Liburan" required><label>Pilih ikon</label><div class="icon-picker" id="iconPicker"><button type="button" class="icon-choice selected" data-icon="◈">◈</button><button type="button" class="icon-choice" data-icon="⌂">⌂</button><button type="button" class="icon-choice" data-icon="✦">✦</button><button type="button" class="icon-choice" data-icon="◇">◇</button><button type="button" class="icon-choice" data-icon="▣">▣</button><button type="button" class="icon-choice" data-icon="◎">◎</button></div><input type="hidden" id="pocketIconInput" value="◈"><div class="modal-actions"><button type="button" class="secondary-btn" data-close-pocket>Batal</button><button type="submit" class="primary-btn">Buat kantong <span>→</span></button></div></form>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-backdrop hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-card confirm-card"><div class="confirm-symbol">!</div><h2 id="confirmTitle">Hapus semua riwayat?</h2><p id="confirmMessage">Apakah Anda yakin ingin menghapus seluruh riwayat transaksi? Tindakan ini tidak dapat dibatalkan.</p><div class="modal-actions"><button id="cancelConfirm" class="secondary-btn">Batal</button><button id="acceptConfirm" class="danger-btn">Ya, hapus semua</button></div></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
